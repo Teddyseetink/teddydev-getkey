@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Gateway | Loading...</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #8b5cf6;
+            --accent: #3b82f6;
+            --error: #ef4444;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: radial-gradient(circle at center, #1e1b4b 0%, #000000 100%);
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- METEOR BACKGROUND --- */
+        .sky { position: absolute; width: 100%; height: 100%; transform: rotateZ(45deg); z-index: 0; pointer-events: none;}
+        .star {
+            position: absolute; top: 50%; left: 50%; height: 2px;
+            background: linear-gradient(-45deg, #5f91ff, rgba(0,0,255,0));
+            filter: drop-shadow(0 0 6px #699bff);
+            animation: tail 3s ease-in-out infinite, shooting 3s ease-in-out infinite;
+        }
+        .star::before, .star::after {
+            content: ''; position: absolute; top: calc(50% - 1px); right: 0; height: 2px;
+            background: linear-gradient(-45deg, rgba(0,0,255,0), #5f91ff, rgba(0,0,255,0));
+            transform: translateX(50%) rotateZ(45deg); border-radius: 100%;
+            animation: shining 3s ease-in-out infinite;
+        }
+        @keyframes tail { 0% { width: 0; } 30% { width: 100px; } 100% { width: 0; } }
+        @keyframes shooting { 0% { transform: translateX(0); } 100% { transform: translateX(300px); } }
+
+        /* --- MAIN CARD --- */
+        .card {
+            position: relative; z-index: 10; width: 380px; padding: 40px;
+            background: var(--glass); backdrop-filter: blur(16px);
+            border: 1px solid var(--border); border-radius: 24px;
+            box-shadow: 0 0 40px rgba(139, 92, 246, 0.15);
+            text-align: center;
+            transition: all 0.5s ease;
+        }
+
+        h1 { font-weight: 800; font-size: 26px; margin-bottom: 5px; background: linear-gradient(to right, #a78bfa, #60a5fa); -webkit-background-clip: text; color: transparent; }
+        p.sub { font-size: 13px; color: #94a3b8; margin-bottom: 25px; }
+
+        .btn-link {
+            width: 100%; padding: 14px; border: none; border-radius: 12px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            color: white; font-weight: 600; cursor: pointer; margin-bottom: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-link:hover { transform: translateY(-2px); box-shadow: 0 0 20px rgba(139, 92, 246, 0.5); }
+
+        input {
+            width: 100%; padding: 14px; background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border); border-radius: 12px;
+            color: white; text-align: center; outline: none; margin-bottom: 10px;
+            transition: border 0.3s;
+        }
+        input:focus { border-color: var(--primary); }
+
+        .btn-verify {
+            width: 100%; padding: 12px; background: transparent;
+            border: 1px solid var(--border); border-radius: 12px;
+            color: #cbd5e1; cursor: pointer; transition: 0.3s;
+        }
+        .btn-verify:hover { background: rgba(255,255,255,0.1); color: white; border-color: white; }
+
+        .error-msg {
+            color: var(--error); font-size: 13px; font-weight: 600;
+            margin-top: 10px; min-height: 20px; text-transform: uppercase; letter-spacing: 1px;
+            display: none; /* Ẩn mặc định */
+        }
+
+        /* --- STEPS --- */
+        .step { display: none; animation: fadeIn 0.5s; }
+        .step.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: 0; } }
+
+        /* --- LOADING OVERLAY (BLUR) --- */
+        #loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4); /* Màu nền tối nhẹ */
+            backdrop-filter: blur(20px); /* Làm mờ toàn bộ phía sau cực mạnh */
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 999;
+            display: none; /* Ẩn mặc định */
+            justify-content: center; align-items: center; flex-direction: column;
+        }
+
+        .spinner {
+            width: 60px; height: 60px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        
+        .loading-text { margin-top: 20px; font-weight: 600; letter-spacing: 2px; font-size: 14px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+
+        /* --- FINAL COPY BUTTON --- */
+        .copy-box {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            border: 1px dashed var(--primary);
+            border-radius: 50px; /* Bo tròn 4 góc */
+            padding: 15px 25px;
+            margin-top: 20px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .copy-box:hover {
+            background: rgba(139, 92, 246, 0.1);
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+            border-style: solid;
+        }
+
+        .key-text { font-family: monospace; font-size: 18px; color: #a78bfa; font-weight: bold; }
+        .copy-label { 
+            background: var(--primary); color: white; 
+            padding: 5px 15px; border-radius: 20px; 
+            font-size: 12px; font-weight: bold; 
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="sky" id="sky"></div>
+
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text">VERIFYING...</div>
+    </div>
+
+    <div class="card">
+        
+        <div id="step1" class="step active">
+            <h1>Checkpoint 1</h1>
+            <p class="sub">Complete verification to proceed.</p>
+            
+            <button class="btn-link" onclick="openLink(1)">Get Key 1</button>
+            <input type="text" id="input1" placeholder="Enter Key 1...">
+            <button class="btn-verify" onclick="check(1)">Verify</button>
+            <div id="err1" class="error-msg">Value Key Fail</div>
+        </div>
+
+        <div id="step2" class="step">
+            <h1>Checkpoint 2</h1>
+            <p class="sub">Final step to unlock content.</p>
+            
+            <button class="btn-link" onclick="openLink(2)">Get Key 2</button>
+            <input type="text" id="input2" placeholder="Enter Key 2...">
+            <button class="btn-verify" onclick="check(2)">Verify</button>
+            <div id="err2" class="error-msg">Value Key Fail</div>
+        </div>
+
+        <div id="step3" class="step">
+            <h1 style="color: #4ade80; background: none; -webkit-text-fill-color: #4ade80;">Success!</h1>
+            <p class="sub">Your key is ready.</p>
+            
+            <div class="copy-box" onclick="copyFinalKey()">
+                <span class="key-text" id="finalKeyText">LOADING...</span>
+                <span class="copy-label" id="copyBtnText">COPY</span>
+            </div>
+            
+            <p style="font-size: 11px; margin-top: 15px; opacity: 0.6;">Click the box above to copy key</p>
+        </div>
+
+    </div>
+
+    <script>
+        // ============= CẤU HÌNH (CONFIG) =============
+        const config = {
+            link1: "https://link-1.com",
+            key1: "KEY1", 
+            
+            link2: "https://link-2.com",
+            key2: "KEY2",
+
+            finalReward: "SCRIPT-VIP-2026"
+        };
+        // =============================================
+
+        // Tạo hiệu ứng sao băng
+        const sky = document.getElementById('sky');
+        for(let i=0; i<15; i++){
+            let star = document.createElement('div');
+            star.className = 'star';
+            star.style.top = Math.random()*100+'%';
+            star.style.left = Math.random()*100+'%';
+            star.style.animationDelay = Math.random()*5+'s';
+            sky.appendChild(star);
+        }
+
+        function openLink(step) {
+            if(step===1) window.open(config.link1, '_blank');
+            if(step===2) window.open(config.link2, '_blank');
+        }
+
+        function check(step) {
+            let input, error, nextStep;
+            
+            if(step === 1) {
+                input = document.getElementById('input1');
+                error = document.getElementById('err1');
+                nextStep = 2;
+                
+                if(input.value === config.key1) {
+                    error.style.display = 'none';
+                    startLoading(1, 2); // Chuyển từ 1 sang 2
+                } else {
+                    error.style.display = 'block'; // Hiện lỗi Value Key Fail
+                    shakeInput(input);
+                }
+            }
+            else if(step === 2) {
+                input = document.getElementById('input2');
+                error = document.getElementById('err2');
+                nextStep = 3;
+
+                if(input.value === config.key2) {
+                    error.style.display = 'none';
+                    document.getElementById('finalKeyText').innerText = config.finalReward;
+                    startLoading(2, 3); // Chuyển từ 2 sang 3 (Đích)
+                } else {
+                    error.style.display = 'block'; // Hiện lỗi Value Key Fail
+                    shakeInput(input);
+                }
+            }
+        }
+
+        // Hàm hiệu ứng Loading 5 giây
+        function startLoading(current, next) {
+            const overlay = document.getElementById('loading-overlay');
+            
+            // 1. Hiện Loading Overlay
+            overlay.style.display = 'flex';
+            
+            // 2. Chờ 5 giây (5000ms)
+            setTimeout(() => {
+                // 3. Ẩn Loading
+                overlay.style.display = 'none';
+                
+                // 4. Đổi Step
+                document.getElementById('step'+current).classList.remove('active');
+                document.getElementById('step'+next).classList.add('active');
+            }, 5000);
+        }
+
+        function copyFinalKey() {
+            const keyText = document.getElementById('finalKeyText').innerText;
+            navigator.clipboard.writeText(keyText).then(() => {
+                const label = document.getElementById('copyBtnText');
+                const oldText = label.innerText;
+                
+                label.innerText = "COPIED!";
+                label.style.background = "#22c55e"; 
+                
+                setTimeout(() => {
+                    label.innerText = "COPY";
+                    label.style.background = "var(--primary)";
+                }, 2000);
+            });
+        }
+
+        function shakeInput(element) {
+            element.style.transform = "translateX(5px)";
+            setTimeout(()=> element.style.transform = "translateX(-5px)", 50);
+            setTimeout(()=> element.style.transform = "translateX(5px)", 100);
+            setTimeout(()=> element.style.transform = "translateX(0)", 150);
+            element.style.borderColor = "var(--error)";
+        }
+    </script>
+</body>
+</html>
