@@ -1,0 +1,142 @@
+/* --- Cấu hình chung --- */
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center; /* Căn giữa ngang */
+    align-items: center; /* Căn giữa dọc */
+    background: radial-gradient(circle at center, #1a0b2e 0%, #000000 100%);
+    font-family: 'Poppins', sans-serif;
+    color: white;
+    overflow: hidden;
+    user-select: none; /* Chống bôi đen chữ để giao diện giống App hơn */
+}
+
+/* --- Khung chính (Card) --- */
+.card {
+    background: rgba(20, 10, 30, 0.9);
+    padding: 40px;
+    border-radius: 25px;
+    width: 350px;
+    text-align: center;
+    border: 2px solid #b026ff;
+    box-shadow: 0 0 50px rgba(176, 38, 255, 0.3);
+    position: relative;
+    z-index: 10;
+    transition: 0.5s;
+}
+
+/* --- Hiệu ứng chữ --- */
+.glow-text {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 32px;
+    color: #fff;
+    text-shadow: 0 0 15px #b026ff;
+    margin: 0;
+    letter-spacing: 2px;
+}
+
+.line {
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #b026ff, transparent);
+    margin: 20px 0;
+    border-radius: 5px;
+}
+
+#message {
+    color: #e0d4fc;
+    margin-bottom: 30px;
+    font-size: 16px;
+    line-height: 1.5;
+    min-height: 50px; /* Giữ khung cố định không bị nhảy */
+}
+
+/* --- NÚT BẤM CHÍNH (GALAXY BUTTON) --- */
+.galaxy-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(118, 75, 162, 0.5);
+    transition: all 0.1s ease; /* Chuyển động cực nhanh */
+    width: 100%;
+    outline: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Hiệu ứng khi di chuột vào (Phóng to + Sáng) */
+.galaxy-btn:hover {
+    transform: translateY(-3px) scale(1.05); /* Bay lên và phóng to */
+    box-shadow: 0 15px 30px rgba(118, 75, 162, 0.7);
+    filter: brightness(1.2);
+}
+
+/* Hiệu ứng khi BẤM CHUỘT (Quan trọng nhất) */
+.galaxy-btn:active {
+    transform: translateY(2px) scale(0.95); /* Nhún xuống và thu nhỏ nhẹ */
+    box-shadow: 0 5px 10px rgba(118, 75, 162, 0.4);
+}
+
+/* --- PHẦN KHUNG KEY --- */
+.input-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    background: #0f0518;
+    padding: 5px;
+    border-radius: 12px;
+    border: 1px solid #5d2891;
+}
+
+input {
+    background: transparent;
+    border: none;
+    color: #00ffcc;
+    padding: 10px;
+    width: 100%;
+    text-align: center;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    outline: none;
+}
+
+/* --- NÚT COPY --- */
+.copy-btn {
+    background: #333;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.1s ease;
+}
+
+.copy-btn:hover {
+    background: #555;
+    transform: scale(1.1); /* Phóng to khi di chuột */
+}
+
+.copy-btn:active {
+    transform: scale(0.9); /* Nhún nhỏ lại khi bấm */
+    background: #00ffcc;
+    color: black;
+}
+
+.success-text {
+    color: #00ffcc;
+    font-weight: bold;
+    margin-bottom: 5px;
+    text-shadow: 0 0 10px #00ffcc;
+}
+
+.footer {
+    margin-top: 30px;
+    font-size: 12px;
+    color: #555;
+}
